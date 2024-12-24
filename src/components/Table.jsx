@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import logo from "../assets/cit_logo.jpeg";
+import logo from "../assets/cit_full_logo.png";
 
 const Table = ({ semesterData, categoryData, categoryMapping }) => {
   const calculateTotalCredits = (courses) => {
@@ -42,7 +42,7 @@ const Table = ({ semesterData, categoryData, categoryMapping }) => {
                 margin-bottom: 20px;
               }
               .logo img {
-                width: 100px;
+                width: auto;
                 height: auto;
               }
               table {

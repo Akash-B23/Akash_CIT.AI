@@ -203,6 +203,8 @@ const CourseDetails = ({ department, regulation }) => {
       ...base,
       backgroundColor: "Black",
       borderColor: "#555555",
+      color: "white",
+      width: "175px",
     }),
     menu: (base) => ({
       ...base,

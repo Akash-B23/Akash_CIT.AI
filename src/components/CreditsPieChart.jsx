@@ -1,11 +1,16 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Chart from "./Chart"; // Import the Chart component
-import Table from "./Table"; // Import the Table component
+import { Pie } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels"; // Import the plugin
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import Table from "./Table.jsx";
+import Header from "./Header.jsx"
+
+ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels); // Register the plugin
+
 const CreditsPieChart = () => {
   const navigate = useNavigate();
   const [departments] = useState([
@@ -47,6 +52,9 @@ const CreditsPieChart = () => {
     if (selectedDept && selectedReg) {
       fetchSemesterData(selectedDept, selectedReg);
       fetchCategoryData(selectedDept, selectedReg);
+    } else {
+      setSemesterData({});
+      setCategoryData({});
     }
   }, [selectedDept, selectedReg]);
 
@@ -84,7 +92,84 @@ const CreditsPieChart = () => {
     setViewMode(mode);
   };
 
+  // Calculate the values dynamically
+  const calculatePieChartData = () => {
+    const totalCourses = Object.values(categoryData).reduce(
+      (sum, courses) => sum + (courses ? courses.length : 0),
+      0
+    );
+
+    if (totalCourses === 0)
+      return Array(Object.keys(categoryMapping).length).fill(0);
+
+    return Object.keys(categoryMapping).map((key) => {
+      const categoryCourses = categoryData[key] ? categoryData[key].length : 0;
+      return (categoryCourses / totalCourses) * 100;
+    });
+  };
+
+  const pieChartData = {
+    labels: Object.values(categoryMapping), // Category names
+    datasets: [
+      {
+        data: calculatePieChartData(), // Calculated percentages
+        backgroundColor: [
+          "#FF5733", // Bright Red-Orange
+          "#33FF57", // Vibrant Green
+          "#5733FF", // Deep Blue
+          "#FFD700", // Gold
+          "#8E44AD", // Purple
+          "#00CED1", // Turquoise
+          "#FF69B4", // Hot Pink
+          "#CD5C5C", // Medium Coral
+        ],
+        hoverBackgroundColor: [
+          "#E04A2C", // Darker Red-Orange
+          "#2CE04A", // Darker Green
+          "#4A2CE0", // Darker Blue
+          "#E6C400", // Darker Gold
+          "#7C3C9E", // Darker Purple
+          "#00B8BE", // Darker Turquoise
+          "#E1589C", // Darker Pink
+          "#B04F4F", // Darker Coral
+        ],
+      },
+    ],
+  };
+
+  const pieChartOptions = {
+    plugins: {
+      legend: {
+        position: "right",
+        labels: {
+          font: {
+            size: 18, // Increased font size for legend labels
+            family: "Arial", // Use a clean and readable font
+          },
+          color: "#FFFFFF", // White font color for better readability on dark backgrounds
+          padding: 15, // Add spacing between legend items
+        },
+      },
+      datalabels: {
+        color: "#FFFFFF", // White font color for data labels
+        formatter: (value) => (value > 0 ? `${value.toFixed(3)}%` : null), // Show values as percentages, hide 0%
+        font: {
+          size: 18, // Increased font size for data labels
+          weight: "bold",
+        },
+      },
+    },
+    responsive: true,
+  };
+  
+  const handleSignOut = () => {
+    // Add sign-out logic here (e.g., clearing session, tokens, etc.)
+    navigate("/");
+  };
+  
   return (
+    <>
+    <Header />
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
       <h1 style={{ marginBottom: "20px", textAlign: "center" }}>
         Department Courses Overview
@@ -171,7 +256,7 @@ const CreditsPieChart = () => {
           View Table
         </button>
 
-        <button
+        {/* <button
           onClick={() => navigate(-1)}
           style={{
             display: "flex",
@@ -190,26 +275,25 @@ const CreditsPieChart = () => {
         >
           <FontAwesomeIcon icon={faHome} />
           Home
-        </button>
+        </button> */}
       </div>
 
-      {viewMode === "chart" &&
-        semesterData &&
-        Object.keys(semesterData).length > 0 && (
-          <Chart
-            categoryData={categoryData}
-            categoryMapping={categoryMapping}
-          />
-        )}
-
-      {viewMode === "chart" && Object.keys(semesterData).length === 0 && (
-        <p
-          style={{
-            marginInlineStart: "450px",
-          }}
-        >
-          No data available for the selected department and regulation.
-        </p>
+      {viewMode === "chart" && (
+        <div style={{ maxWidth: "950px", margin: "0 auto" }}>
+          {selectedDept ? (
+            <Pie data={pieChartData} options={pieChartOptions} />
+          ) : (
+            <p
+              style={{
+                textAlign: "center",
+                color: "#ffffff",
+                fontSize: "25px",
+              }}
+            >
+              Please select a department
+            </p>
+          )}
+        </div>
       )}
 
       {viewMode === "table" && Object.keys(semesterData).length !== 0 && (
@@ -220,6 +304,7 @@ const CreditsPieChart = () => {
         />
       )}
     </div>
+    </>
   );
 };
 

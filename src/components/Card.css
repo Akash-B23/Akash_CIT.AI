@@ -4,96 +4,99 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 20px;
 }
 
-.card {
-  background-color: #ffffff;
-  border: 1px solid #e3e6eb;
+.card-container .card{
+  background-color: #f8f8f8;
+  border: 1px solid #000000;
   border-radius: 16px;
-  padding: 24px;
-  width: 340px;
+  padding: 25px;
+  width: 500px;
   text-align: center;
   box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease, height 0.3s ease, border-color 0.3s ease;
   overflow: visible;
-  /* Ensure content doesn't get cut off */
 }
 
-.card:hover {
-  transform: translateY(-6px);
+/* .card-container .card:hover {
+  transform: translateY(-10px);
   box-shadow: 0px 12px 32px rgba(0, 0, 0, 0.15);
-  border-color: #007bff;
-  /* Add border color to indicate hover */
-}
+  border-color: #ffffff;
+} */
 
-.card h2 {
+.card-container .card h2 {
   font-size: 1.8rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #000000;
   margin-bottom: 12px;
 }
 
-.card p {
+.card-container .card p {
   font-size: 1rem;
-  color: #4f5665;
+  color: #000000;
   margin-bottom: 24px;
   line-height: 1.6;
 }
 
-.radio-group {
-  margin-bottom: 16px;
+.card .radio-group
+{
+  margin: 0 auto; 
+
+}
+.card .radio-group label{
   text-align: left;
 }
 
-.radio-group label {
+.card .radio-group span {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 5px;
   font-size: 1rem;
-  color: #4f5665;
-  padding: 8px 12px;
+  color: #000000;
+  padding: 8px 5px;
   border-radius: 8px;
   transition: background-color 0.2s ease, color 0.2s ease;
   cursor: pointer;
 }
 
-.radio-group label:hover {
+.card .radio-group label:hover {
   background-color: rgba(0, 123, 255, 0.1);
   /* Light blue highlight */
-  color: #007bff;
+  color: #000000;
   /* Make text blue on hover */
 }
 
-.radio-group input[type="radio"] {
-  accent-color: #4a90e2;
+.card .radio-group input[type="radio"] {
+  accent-color: #000000;
   cursor: pointer;
 }
 
-.selected-option-container {
-  margin-top: 16px;
+.card .selected-option-container {
+  margin-top: 0px;
   padding: 16px 0;
-  border-top: 1px solid #e3e6eb;
-  /* Divider */
+  position: relative;
+  opacity: 1;
   text-align: center;
   animation: fadeIn 0.3s ease;
   /* Smooth transition when appearing */
+  visibility: visible;
 }
 
-.selected-option-text {
+.card .selected-option-text {
   font-size: 1.1rem;
   font-weight: 600;
   color: #007bff;
   margin-bottom: 12px;
 }
 
-.continue-button {
+.card .continue-button {
   display: flex;
   justify-content: center;
   margin-top: 8px;
+  opacity: 1;
 }
 
-.continue-button button {
+.card .continue-button button {
   background-color: #007bff;
   color: #ffffff;
   border: none;
@@ -102,8 +105,8 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-  width: 100%;
+  /* transition: background-color 0.2s ease, transform 0.2s ease; */
+  width: 50%;
 }
 
 .continue-button button:hover {
@@ -113,11 +116,6 @@
 
 .continue-button button:active {
   transform: translateY(0);
-}
-
-.card span {
-  font-size: 0.95rem;
-  color: #4f5665;
 }
 
 /* Animation for appearing content */

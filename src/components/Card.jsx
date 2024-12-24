@@ -2,16 +2,19 @@
 /* eslint-disable react/prop-types */
 import React from "react";
 import "./Card.css"; // Ensure this is imported
+import Header from "./Header.jsx";
 
 function Card({ dept, selectedOption, onOptionChange, onContinue }) {
   return (
+    <>
+    <Header />
     <div className="card-container">
-      <div className={`card ${selectedOption ? "expanded" : ""}`}>
+      <div className="card">
         <h2 className="card-title">{dept}</h2>
         <p className="card-description">
           Select the regulation which you are going to fill the details for
         </p>
-        <form>
+
           <div className="radio-group">
             <label>
               <input
@@ -54,7 +57,6 @@ function Card({ dept, selectedOption, onOptionChange, onContinue }) {
               <span>Regulation 2024</span>
             </label>
           </div>
-        </form>
 
         {selectedOption && (
           <div className="selected-option-container">
@@ -68,6 +70,7 @@ function Card({ dept, selectedOption, onOptionChange, onContinue }) {
         )}
       </div>
     </div>
+    </>
   );
 }
 
