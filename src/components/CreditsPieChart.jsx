@@ -4,14 +4,15 @@ import axios from "axios";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
 import Table from "./Table.jsx";
+import { useDepartment } from "../components/DepartmentContext";
 import Header from "./Header.jsx";
 
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
 const CreditsPieChart = () => {
+  const { department } = useDepartment(); // Get department from context
   const navigate = useNavigate();
   const [departments] = useState([
     { id: 1, name: "CSE" },
@@ -30,9 +31,9 @@ const CreditsPieChart = () => {
     { id: 14, name: "CIVIL" },
   ]);
 
-  const [regulations] = useState(["R21", "R22", "R22R", "R24"]);
-  const [selectedReg, setSelectedReg] = useState("R21");
-  const [selectedDept, setSelectedDept] = useState("");
+  const isDean = department === "DEAN"; // Determine if the user is a dean
+  const [selectedDept, setSelectedDept] = useState(department || "");
+  const [selectedRegulation, setSelectedRegulation] = useState("R21"); // Default value is R21
   const [semesterData, setSemesterData] = useState({});
   const [categoryData, setCategoryData] = useState({});
   const [allRegulationsCategoryData, setAllRegulationsCategoryData] = useState({});
@@ -50,14 +51,11 @@ const CreditsPieChart = () => {
   };
 
   useEffect(() => {
-    if (selectedDept && selectedReg) {
-      fetchSemesterData(selectedDept, selectedReg);
-      fetchCategoryData(selectedDept, selectedReg);
-    } else {
-      setSemesterData({});
-      setCategoryData({});
+    if (selectedDept) {
+      fetchSemesterData(selectedDept, selectedRegulation);
+      fetchCategoryData(selectedDept, selectedRegulation);
     }
-  }, [selectedDept, selectedReg]);
+  }, [selectedDept, selectedRegulation]);
 
   useEffect(() => {
     if (selectedDept) {
@@ -67,52 +65,35 @@ const CreditsPieChart = () => {
 
   const fetchSemesterData = async (department, regulation) => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/courses/semester",
-        {
-          params: { department, regulation },
-        }
-      );
-      console.log("Semester Data:", response.data); // Log the response here
+      const response = await axios.get("http://localhost:5000/api/courses/semester", {
+        params: { department, regulation },
+      });
       setSemesterData(response.data);
     } catch (err) {
-      console.error(err);
       setSemesterData({});
     }
   };
 
   const fetchCategoryData = async (department, regulation) => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/courses/category",
-        {
-          params: { department, regulation },
-        }
-      );
+      const response = await axios.get("http://localhost:5000/api/courses/category", {
+        params: { department, regulation },
+      });
       setCategoryData(response.data);
     } catch (err) {
-      console.error(err);
       setCategoryData({});
     }
   };
 
   const fetchAllRegulationsCategoryData = async (department) => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/courses/category/all",
-        {
-          params: { department },
-        }
-      );
+      const response = await axios.get("http://localhost:5000/api/courses/category/all", {
+        params: { department },
+      });
       setAllRegulationsCategoryData(response.data);
     } catch (err) {
-      console.error(err);
       setAllRegulationsCategoryData({});
     }
-  };
-
-  const handleViewChange = (mode) => {
-    setViewMode(mode);
   };
 
   const calculatePieChartData = (data) => {
@@ -148,6 +129,10 @@ const CreditsPieChart = () => {
     cutout: "50%",
   };
 
+  const handleViewChange = (mode) => {
+    setViewMode(mode);
+  };
+
   const handleSignOut = () => {
     navigate("/");
   };
@@ -170,45 +155,61 @@ const CreditsPieChart = () => {
             gap: "15px",
           }}
         >
-          <select
-            onChange={(e) => setSelectedDept(e.target.value)}
-            value={selectedDept}
-            style={{
-              padding: "10px",
-              fontSize: "16px",
-              borderRadius: "5px",
-              border: "1px solid #ddd",
-              width: "200px",
-            }}
-          >
-            <option value="">Select a Department</option>
-            {departments.map((dept) => (
-              <option key={dept.id} value={dept.name}>
-                {dept.name}
-              </option>
-            ))}
-          </select>
+          <div style={{ display: "flex", gap: "15px" }}>
+            {isDean ? (
+              <select
+                onChange={(e) => setSelectedDept(e.target.value)}
+                value={selectedDept}
+                style={{
+                  padding: "10px",
+                  fontSize: "16px",
+                  borderRadius: "5px",
+                  border: "1px solid #ddd",
+                  width: "200px",
+                }}
+              >
+                <option value="">Select a Department</option>
+                {departments.map((dept) => (
+                  <option key={dept.id} value={dept.name}>
+                    {dept.name}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <select
+                value={department}
+                disabled
+                style={{
+                  padding: "10px",
+                  fontSize: "16px",
+                  borderRadius: "5px",
+                  border: "1px solid #ddd",
+                  width: "200px",
+                }}
+              >
+                <option value={department}>{department}</option>
+              </select>
+            )}
 
-          {/* Show regulation dropdown only for "table" view mode */}
-          {viewMode === "table" && (
-            <select
-              onChange={(e) => setSelectedReg(e.target.value)}
-              value={selectedReg}
-              style={{
-                padding: "10px",
-                fontSize: "16px",
-                borderRadius: "5px",
-                border: "1px solid #ddd",
-                width: "200px",
-              }}
-            >
-              {regulations.map((reg, index) => (
-                <option key={index} value={reg}>
-                  {reg}
-                </option>
-              ))}
-            </select>
-          )}
+            {viewMode === "table" && (
+              <select
+                onChange={(e) => setSelectedRegulation(e.target.value)}
+                value={selectedRegulation}
+                style={{
+                  padding: "10px",
+                  fontSize: "16px",
+                  borderRadius: "5px",
+                  border: "1px solid #ddd",
+                  width: "200px",
+                }}
+              >
+                <option value="R21">R21</option>
+                <option value="R22">R22</option>
+                <option value="R22R">R22R</option>
+                <option value="R24">R24</option>
+              </select>
+            )}
+          </div>
 
           <button
             onClick={() => handleViewChange("chart")}
@@ -256,60 +257,57 @@ const CreditsPieChart = () => {
             }}
           >
             {selectedDept ? (
-              <>
-                {Object.entries(allRegulationsCategoryData).map(
-                  ([regulation, data]) => {
-                    if (Object.values(data).every((category) => !category.length)) {
-                      return null; // Skip empty data
-                    }
-                    return (
-                      <div
-                        key={regulation}
-                        style={{
-                          backgroundColor: "#fff",
-                          padding: "20px",
-                          borderRadius: "8px",
-                          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                          border: "none"
-                        }}
-                      >
-                        <h2 style={{ textAlign: "center", color: "black"}}>{regulation}</h2>
-                        <Pie
-                          data={{
-                            labels: Object.values(categoryMapping),
-                            datasets: [
-                              {
-                                data: calculatePieChartData(data),
-                                backgroundColor: [
-                                  "#FF6384",
-                                  "#36A2EB",
-                                  "#FFCE56",
-                                  "#4BC0C0",
-                                  "#9966FF",
-                                  "#FF9F40",
-                                  "#C9CBCF",
-                                  "#66ff00"
-                                ],
-                                hoverBackgroundColor: [
-                                  "#FF6384",
-                                  "#36A2EB",
-                                  "#FFCE56",
-                                  "#4BC0C0",
-                                  "#9966FF",
-                                  "#FF9F40",
-                                  "#C9CBCF",
-                                  "#66ff00"
-                                ],
-                              },
-                            ],
-                          }}
-                          options={pieChartOptions}
-                        />
-                      </div>
-                    );
+              Object.entries(allRegulationsCategoryData).map(
+                ([regulation, data]) => {
+                  if (Object.values(data).every((category) => !category.length)) {
+                    return null;
                   }
-                )}
-              </>
+                  return (
+                    <div
+                      key={regulation}
+                      style={{
+                        backgroundColor: "#fff",
+                        padding: "20px",
+                        borderRadius: "8px",
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                      }}
+                    >
+                      <h2 style={{ textAlign: "center", color: "black" }}>{regulation}</h2>
+                      <Pie
+                        data={{
+                          labels: Object.values(categoryMapping),
+                          datasets: [
+                            {
+                              data: calculatePieChartData(data),
+                              backgroundColor: [
+                                "#FF6384",
+                                "#36A2EB",
+                                "#FFCE56",
+                                "#4BC0C0",
+                                "#9966FF",
+                                "#FF9F40",
+                                "#C9CBCF",
+                                "#66ff00",
+                              ],
+                              hoverBackgroundColor: [
+                                "#FF6384",
+                                "#36A2EB",
+                                "#FFCE56",
+                                "#4BC0C0",
+                                "#9966FF",
+                                "#FF9F40",
+                                "#C9CBCF",
+                                "#66ff00",
+                              ],
+                            },
+                          ],
+                        }}
+                        options={pieChartOptions}
+                      />
+                    </div>
+                  );
+                }
+              )
             ) : (
               <p style={{ textAlign: "center", color: "#fff" }}>
                 Please select a department to view the chart.
@@ -319,16 +317,17 @@ const CreditsPieChart = () => {
         )}
 
         {viewMode === "table" && (
-          <Table
-            semesterData={semesterData}
-            categoryData={categoryData}
-            categoryMapping={categoryMapping}
-          />
+          <div style={{ marginBottom: "20px", textAlign: "center" }}>
+            <Table
+              semesterData={semesterData}
+              categoryData={categoryData}
+              categoryMapping={categoryMapping}
+            />
+          </div>
         )}
       </div>
     </>
   );
-
 };
 
 export default CreditsPieChart;

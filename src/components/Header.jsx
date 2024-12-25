@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "./Header.css";
@@ -31,19 +32,19 @@ const Header = () => {
         </Link>
         <button
           id="credits-button"
-          onClick = {navigateToDashboard}
+          onClick={navigateToDashboard}
         >
           DashBoard
         </button>
       </div>
-      <div className = "regAndDeptDetail">
+      <div className="regAndDeptDetail">
         <p>Regulation: {regulation}</p> {/* Display department */}
       </div>
       <div id="logo-container">
         <img src={logo} alt="CIT.AI Logo" id="logo" />
         <h1 id="header-h1">CIT.AI</h1>
       </div>
-      <div className = "regAndDeptDetail">
+      <div className="regAndDeptDetail">
         <p>Department: {department}</p> {/* Display department */}
       </div>
       <div className="header-buttons">

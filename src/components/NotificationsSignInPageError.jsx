@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import * as React from "react";
 import { AppProvider } from "@toolpad/core/AppProvider";
 import { SignInPage } from "@toolpad/core/SignInPage";
@@ -38,6 +39,7 @@ const signIn = async (
         navigate("/chart");
         setIsLoggedIn(true);
         localStorage.setItem("isLoggedIn", true);
+        setDepartment("DEAN");
         resolve({
           type: "CredentialsSignin",
           error: null, // No error for successful login

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useDepartment } from "./DepartmentContext";  // Import context hook
-import { useRegulation } from "./RegulationContext"; 
+import { useRegulation } from "./RegulationContext";
 import NavBar from "./Navbar.jsx"; // Replace SideBar with NavBar
 import Header from "./Header.jsx";
 import MainContent from "./MainContent.jsx";
@@ -10,7 +10,7 @@ import "./DashBoard.css";
 
 function DashBoard() {
   const { department } = useDepartment(); // Get department from context
-  const { regulation } = useRegulation(); 
+  const { regulation } = useRegulation();
   const [selectedSemester, setSelectedSemester] = useState("1"); // Default semester
   const [courseData, setCourseData] = useState({
     1: [],
@@ -24,7 +24,7 @@ function DashBoard() {
   });
 
   const location = useLocation();
-  console.log(location.state, "Location State"); // Check if rd is correctly s
+  console.log(location.state, "Location State"); // Check if rd is correctly
 
   const handleSemesterSelect = (semester) => {
     setSelectedSemester(semester); // Update the selected semester state
@@ -45,8 +45,8 @@ function DashBoard() {
         selectedSemester={selectedSemester}
         courseData={courseData}
         onCourseDataChange={updateCoursesForSemester}
-        department = {department || location}
-        regulation = {regulation}
+        department={department || location}
+        regulation={regulation}
       />
     </div>
   );
