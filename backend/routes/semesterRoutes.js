@@ -144,7 +144,7 @@ router.get("/semester-details", async (req, res) => {
 
 async function recalculateCredits(regulation, semester) {
   try {
-    const regulationTable = regulation.toLowerCase();
+    const regulationTable = format('%I', regulation.toLowerCase()); // Safely format table name
     console.log(`Recalculating credits for table: ${regulationTable}`);
     const resetCreditsQuery = `
       UPDATE ${regulationTable}
@@ -171,12 +171,21 @@ async function recalculateCredits(regulation, semester) {
 
       const fullCategory = categoryMapping[category] || category;
 
-      const queryUpdateCategoryCredits = `
-        INSERT INTO ${regulationTable} (semester, category, credits)
+      
+      const queryUpdateCategoryCredits = format(`
+        INSERT INTO %I (semester,category, credits)
         VALUES ($1, $2, $3)
         ON CONFLICT (semester, category)
-        DO UPDATE SET credits = $3;
-      `;
+        DO UPDATE SET 
+          credits = EXCLUDED.credits
+      `, regulationTable);
+
+      // const queryUpdateCategoryCredits = `
+      //   INSERT INTO ${regulationTable} (semester, category, credits)
+      //   VALUES ($1, $2, $3)
+      //   ON CONFLICT (semester, category)
+      //   DO UPDATE SET credits = $3;
+      // `;
       const valuesUpdateCategoryCredits = [semester, fullCategory, total_credits];
 
       await pool.query(queryUpdateCategoryCredits, valuesUpdateCategoryCredits);
