@@ -132,27 +132,20 @@ const CreditsPieChart = () => {
 
   const pieChartOptions = {
     plugins: {
-      legend: {
-        position: "top",
-        labels: {
-          font: {
-            size: 16,
-            family: "Arial",
-          },
-          color: "#000000",
-          padding: 15,
-        },
-      },
       datalabels: {
-        color: "#000000",
-        formatter: (value) => (value > 0 ? `${value.toFixed(3)}%` : null),
-        font: {
-          size: 16,
-          weight: "bold",
-        },
+        display: true,
+        color: "#ffffff",
+        font: { size: 14, weight: "bold" },
+        formatter: (value) => (value > 0 ? `${value.toFixed(1)}%` : ""),
+        anchor: "center",
+        align: "center",
+        offset: 6,
       },
     },
     responsive: true,
+    maintainAspectRatio: true,
+    rotation: Math.PI / 2,
+    cutout: "50%",
   };
 
   const handleSignOut = () => {
@@ -277,10 +270,10 @@ const CreditsPieChart = () => {
                           padding: "20px",
                           borderRadius: "8px",
                           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                          border: selectedReg === regulation ? "2px solid #007bff" : "none",
+                          border: "none"
                         }}
                       >
-                        <h2 style={{ textAlign: "center" }}>{regulation}</h2>
+                        <h2 style={{ textAlign: "center", color: "black"}}>{regulation}</h2>
                         <Pie
                           data={{
                             labels: Object.values(categoryMapping),
