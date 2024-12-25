@@ -307,7 +307,7 @@ const CourseDetails = ({ department, regulation }) => {
                     <option value="Theory">Theory</option>
                     <option value="Practical">Practical</option>
                     <option value="Theory cum Practical">
-                      Theory cum Practical
+                      Theory/Practical
                     </option>
                   </select>
                 </td>
