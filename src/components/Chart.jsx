@@ -21,13 +21,13 @@ ChartJS.register(
   Legend
 );
 
-const Chart = ({ categoryData, categoryMapping }) => {
-  const pieChartData = {
+const Chart = ({ allRegulationData, categoryMapping }) => {
+  const generateChartData = (regulationData) => ({
     labels: Object.keys(categoryMapping),
     datasets: [
       {
         data: Object.keys(categoryMapping).map(
-          (key) => categoryData[key]?.length || 0
+          (key) => regulationData[key]?.length || 0
         ),
         backgroundColor: [
           "#FF6384",
@@ -55,39 +55,44 @@ const Chart = ({ categoryData, categoryMapping }) => {
         ],
       },
     ],
-  };
-
-  const pieChartOptions = {
-    plugins: {
-      tooltip: {
-        callbacks: {
-          label: function (context) {
-            const categoryKey = context.label || "Unknown";
-            const categoryFullName =
-              categoryMapping[categoryKey] || categoryKey;
-            const dataset = context.dataset;
-            const total = dataset.data.reduce((sum, value) => sum + value, 0);
-            const value = dataset.data[context.dataIndex];
-            const percentage = ((value / total) * 100).toFixed(2);
-            return `${categoryFullName}: ${percentage}%`;
-          },
-        },
-      },
-    },
-    maintainAspectRatio: true,
-    responsive: true,
-  };
+  });
 
   return (
-    <div
-      style={{
-        textAlign: "center",
-        margin: "20px",
-        maxWidth: "600px",
-        margin: "auto",
-      }}
-    >
-      <Pie data={pieChartData} options={pieChartOptions} />
+    <div>
+      {Object.entries(allRegulationData).map(([regulation, regulationData]) => (
+        <div key={regulation} style={{ margin: "20px", textAlign: "center" }}>
+          <h3>{`Regulation ${regulation}`}</h3>
+          <Pie
+            data={generateChartData(regulationData)}
+            options={{
+              plugins: {
+                tooltip: {
+                  callbacks: {
+                    label: function (context) {
+                      const categoryKey = context.label || "Unknown";
+                      const categoryFullName =
+                        categoryMapping[categoryKey] || categoryKey;
+                      const dataset = context.dataset;
+                      const total = dataset.data.reduce(
+                        (sum, value) => sum + value,
+                        0
+                      );
+                      const value = dataset.data[context.dataIndex];
+                      const percentage = (
+                        (value / total) *
+                        100
+                      ).toFixed(2);
+                      return `${categoryFullName}: ${percentage}%`;
+                    },
+                  },
+                },
+              },
+              maintainAspectRatio: true,
+              responsive: true,
+            }}
+          />
+        </div>
+      ))}
     </div>
   );
 };

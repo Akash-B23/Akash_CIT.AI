@@ -1,20 +1,23 @@
 /* Card.css */
 .card-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin-top: 2%;
+  height: auto !important;
 }
 
 .card-container .card{
   background-color: #f8f8f8;
   border: 1px solid #000000;
   border-radius: 16px;
-  padding: 25px;
-  width: 500px;
+  padding: 20px;
+  padding-top: 0%;
+  width: 600px;
   text-align: center;
   box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease, height 0.3s ease, border-color 0.3s ease;
+  /* transition: transform 0.3s ease, box-shadow 0.3s ease, height 0.3s ease, border-color 0.3s ease; */
   overflow: visible;
 }
 
@@ -25,17 +28,17 @@
 } */
 
 .card-container .card h2 {
-  font-size: 1.8rem;
-  font-weight: 700;
+  font-size: 2.5rem;
+  font-weight: 650;
   color: #000000;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .card-container .card p {
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: #000000;
   margin-bottom: 24px;
-  line-height: 1.6;
+  line-height: 0.5;
 }
 
 .card .radio-group
@@ -51,7 +54,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: #000000;
   padding: 8px 5px;
   border-radius: 8px;
@@ -72,8 +75,8 @@
 }
 
 .card .selected-option-container {
-  margin-top: 0px;
-  padding: 16px 0;
+  margin: 0px;
+  padding: 3px 0;
   position: relative;
   opacity: 1;
   text-align: center;
@@ -93,6 +96,7 @@
   display: flex;
   justify-content: center;
   margin-top: 8px;
+  margin-bottom: 0px;
   opacity: 1;
 }
 
@@ -109,8 +113,8 @@
   width: 50%;
 }
 
-.continue-button button:hover {
-  background-color: #0056b3;
+.card .continue-button button:hover {
+  background-color: #0458b3;
   transform: translateY(-2px);
 }
 

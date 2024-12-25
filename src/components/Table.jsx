@@ -1,7 +1,11 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */
 import React, { useEffect } from "react";
 import logo from "../assets/cit_full_logo.png";
 
 const Table = ({ semesterData, categoryData, categoryMapping }) => {
+  console.log(semesterData);
+  console.log(categoryData);
   const calculateTotalCredits = (courses) => {
     return courses.reduce(
       (total, course) => total + parseFloat(course.credits || 0),
@@ -114,8 +118,8 @@ const Table = ({ semesterData, categoryData, categoryMapping }) => {
   }, []);
 
   const isEmptyData =
-    Object.keys(semesterData).length === 0 &&
-    Object.keys(categoryData).length === 0;
+    (semesterData && Object.keys(semesterData).length === 0) &&
+    (categoryData && Object.keys(categoryData).length === 0);
 
   return (
     <div>
@@ -126,12 +130,12 @@ const Table = ({ semesterData, categoryData, categoryMapping }) => {
       ) : (
         <>
           {/* Render semester tables */}
-          {Object.entries(semesterData).map(([semester, courses]) => (
+          {Object.entries(semesterData || {}).map(([semester, courses]) => (
             <div key={semester} style={{ marginBottom: "20px" }}>
               <h2 style={{ textAlign: "center", marginBottom: "10px" }}>
                 Semester {semester}
               </h2>
-              {courses.length > 0 ? (
+              {courses && courses.length > 0 ? (
                 <table
                   className="generatePDF"
                   style={{
@@ -297,10 +301,10 @@ const Table = ({ semesterData, categoryData, categoryMapping }) => {
           ))}
 
           {/* Render category tables */}
-          {Object.entries(categoryData).map(([category, courses]) => (
+          {Object.entries(categoryData || {}).map(([category, courses]) => (
             <div key={category} style={{ marginBottom: "20px" }}>
               <h3 style={{ textAlign: "center", marginBottom: "10px" }}>
-                {categoryMapping[category]}
+                {categoryMapping && categoryMapping[category]}
               </h3>
               <table
                 className="generatePDF"

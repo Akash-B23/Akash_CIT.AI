@@ -7,9 +7,11 @@ import CourseDetails5 from "./semesters/courseDetails5.jsx";
 import CourseDetails6 from "./semesters/courseDetails6.jsx";
 import CourseDetails7 from "./semesters/courseDetails7.jsx";
 import CourseDetails8 from "./semesters/courseDetails8.jsx";
+import { useDepartment } from "../components/DepartmentContext"; // Import department context
+import { useRegulation } from "../components/RegulationContext"; // Import regulation context
 import "./MainContent.css";
 
-const MainContent = ({ selectedSemester, rd }) => {
+const MainContent = ({ selectedSemester }) => {
   const [semesterCourses, setSemesterCourses] = useState({
     "1": [],
     "2": [],
@@ -21,6 +23,10 @@ const MainContent = ({ selectedSemester, rd }) => {
     "8": [],
   });
 
+  // Access department and regulation from context
+  const { department } = useDepartment();
+  const { regulation } = useRegulation();
+
   // Function to update course data for a specific semester
   const updateCoursesForSemester = (semester, updatedCourses) => {
     setSemesterCourses((prevCourses) => ({
@@ -30,30 +36,42 @@ const MainContent = ({ selectedSemester, rd }) => {
   };
 
   // Function to fetch the course details for the selected semester (if needed)
-  const fetchCourses = async (semester, department, regulation) => {
+  const fetchCourses = async (department, regulation, semester) => {
     try {
       const response = await fetch(
         `http://localhost:5000/semester-details?department=${department}&regulation=${regulation}&semester=${semester}`
       );
-      const data = await response.json();
-      updateCoursesForSemester(semester, data); // Set the courses fetched from the server
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      // Try parsing the response as JSON
+      const courses = await response.json();
+      
+      // Update the state with fetched data
+      updateCoursesForSemester(semester, courses); // Set the courses fetched from the server
     } catch (error) {
       console.error("Error fetching courses:", error);
     }
   };
 
-  // Split department and regulation from the rd prop
-  const [dept, regulation] = rd.split("-");
-
   // Fetch the courses when the component mounts or when the semester changes
   useEffect(() => {
-    fetchCourses(selectedSemester, dept, regulation);
-  }, [selectedSemester, dept, regulation]);
+    if (department && regulation) {
+      fetchCourses(department, regulation, selectedSemester);
+    }
+  }, [selectedSemester, department, regulation]);
 
   // Function to render the corresponding CourseDetails component based on selectedSemester
   const renderCourseDetails = () => {
+    const coursesForSelectedSemester = semesterCourses[selectedSemester] || [];
+
+    if (!coursesForSelectedSemester) {
+      return <div>Error: No courses found for this semester.</div>;
+    }
+
     const commonProps = {
-      department: dept,
+      department: department,
       regulation: regulation,
       semester: selectedSemester,
       setCourses: updateCoursesForSemester,

@@ -5,6 +5,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { Snackbar, Alert } from "@mui/material"; // Import MUI components for error message
 import credentials from "../data/Cred.js";
+import { useDepartment } from "../components/DepartmentContext.jsx"
 // Define your theme with dark mode
 const darkTheme = createTheme({
   palette: {
@@ -21,7 +22,8 @@ const signIn = async (
   formData,
   setIsLoggedIn,
   navigate,
-  setErrorMessage
+  setErrorMessage,
+  setDepartment
 ) => {
   const promise = new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -35,6 +37,7 @@ const signIn = async (
       if (user && user.email.includes("DEAN")) {
         navigate("/chart");
         setIsLoggedIn(true);
+        localStorage.setItem("isLoggedIn", true);
         resolve({
           type: "CredentialsSignin",
           error: null, // No error for successful login
@@ -44,10 +47,11 @@ const signIn = async (
       if (user) {
         // If a match is found, extract the department from the email
         const department = email?.split("--")[0]?.replace("DEPT-OF-", "");
-
+        setDepartment(department);
         // If the department is successfully extracted, proceed
         setIsLoggedIn(true);
-        navigate("/select-department", { state: { dept: department } }); // Pass dept as state
+        localStorage.setItem("isLoggedIn", true);
+        navigate("/select-department", { state: { dept: department } });
         resolve({
           type: "CredentialsSignin",
           error: null, // No error for successful login
@@ -67,19 +71,36 @@ const signIn = async (
 };
 
 export default function Login({ setIsLoggedIn }) {
+  const { setDepartment } = useDepartment();
   const navigate = useNavigate(); // Use navigate for redirection
   const [errorMessage, setErrorMessage] = React.useState(""); // State to store error message
+
+  React.useEffect(() => {
+    const storedIsLoggedIn = localStorage.getItem("isLoggedIn");
+    if (storedIsLoggedIn) {
+      setIsLoggedIn(JSON.parse(storedIsLoggedIn));
+    }
+  }, [setIsLoggedIn]);
+
+  // Redirect to login if not authenticated
+  React.useEffect(() => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
+    if (!JSON.parse(isLoggedIn)) {
+      navigate("/");
+    }
+  }, [navigate]);
+
+  const handleSignIn = (provider, formData) =>
+    signIn(provider, formData, (isLoggedIn) => {
+      setIsLoggedIn(isLoggedIn);
+      localStorage.setItem("isLoggedIn", isLoggedIn);
+    }, navigate, setErrorMessage, setDepartment);
 
   return (
     <ThemeProvider theme={darkTheme}>
       <AppProvider theme={darkTheme}>
         {/* Pass signIn function with required parameters */}
-        <SignInPage
-          signIn={(provider, formData) =>
-            signIn(provider, formData, setIsLoggedIn, navigate, setErrorMessage)
-          }
-          providers={providers}
-        />
+        <SignInPage signIn={handleSignIn} providers={providers} />
         {/* Display error message as Snackbar if credentials don't match */}
         {errorMessage && (
           <Snackbar

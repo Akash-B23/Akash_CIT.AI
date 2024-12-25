@@ -1,15 +1,15 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import ChartDataLabels from "chartjs-plugin-datalabels"; // Import the plugin
+import ChartDataLabels from "chartjs-plugin-datalabels";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import Table from "./Table.jsx";
-import Header from "./Header.jsx"
+import Header from "./Header.jsx";
 
-ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels); // Register the plugin
+ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
 const CreditsPieChart = () => {
   const navigate = useNavigate();
@@ -35,7 +35,8 @@ const CreditsPieChart = () => {
   const [selectedDept, setSelectedDept] = useState("");
   const [semesterData, setSemesterData] = useState({});
   const [categoryData, setCategoryData] = useState({});
-  const [viewMode, setViewMode] = useState("chart"); // Default to 'chart'
+  const [allRegulationsCategoryData, setAllRegulationsCategoryData] = useState({});
+  const [viewMode, setViewMode] = useState("chart");
 
   const categoryMapping = {
     HSMC: "Humanities & Social Science Courses (HSMC)",
@@ -58,6 +59,12 @@ const CreditsPieChart = () => {
     }
   }, [selectedDept, selectedReg]);
 
+  useEffect(() => {
+    if (selectedDept) {
+      fetchAllRegulationsCategoryData(selectedDept);
+    }
+  }, [selectedDept]);
+
   const fetchSemesterData = async (department, regulation) => {
     try {
       const response = await axios.get(
@@ -66,6 +73,7 @@ const CreditsPieChart = () => {
           params: { department, regulation },
         }
       );
+      console.log("Semester Data:", response.data); // Log the response here
       setSemesterData(response.data);
     } catch (err) {
       console.error(err);
@@ -88,13 +96,27 @@ const CreditsPieChart = () => {
     }
   };
 
+  const fetchAllRegulationsCategoryData = async (department) => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/courses/category/all",
+        {
+          params: { department },
+        }
+      );
+      setAllRegulationsCategoryData(response.data);
+    } catch (err) {
+      console.error(err);
+      setAllRegulationsCategoryData({});
+    }
+  };
+
   const handleViewChange = (mode) => {
     setViewMode(mode);
   };
 
-  // Calculate the values dynamically
-  const calculatePieChartData = () => {
-    const totalCourses = Object.values(categoryData).reduce(
+  const calculatePieChartData = (data) => {
+    const totalCourses = Object.values(data).reduce(
       (sum, courses) => sum + (courses ? courses.length : 0),
       0
     );
@@ -103,209 +125,215 @@ const CreditsPieChart = () => {
       return Array(Object.keys(categoryMapping).length).fill(0);
 
     return Object.keys(categoryMapping).map((key) => {
-      const categoryCourses = categoryData[key] ? categoryData[key].length : 0;
+      const categoryCourses = data[key] ? data[key].length : 0;
       return (categoryCourses / totalCourses) * 100;
     });
-  };
-
-  const pieChartData = {
-    labels: Object.values(categoryMapping), // Category names
-    datasets: [
-      {
-        data: calculatePieChartData(), // Calculated percentages
-        backgroundColor: [
-          "#FF5733", // Bright Red-Orange
-          "#33FF57", // Vibrant Green
-          "#5733FF", // Deep Blue
-          "#FFD700", // Gold
-          "#8E44AD", // Purple
-          "#00CED1", // Turquoise
-          "#FF69B4", // Hot Pink
-          "#CD5C5C", // Medium Coral
-        ],
-        hoverBackgroundColor: [
-          "#E04A2C", // Darker Red-Orange
-          "#2CE04A", // Darker Green
-          "#4A2CE0", // Darker Blue
-          "#E6C400", // Darker Gold
-          "#7C3C9E", // Darker Purple
-          "#00B8BE", // Darker Turquoise
-          "#E1589C", // Darker Pink
-          "#B04F4F", // Darker Coral
-        ],
-      },
-    ],
   };
 
   const pieChartOptions = {
     plugins: {
       legend: {
-        position: "right",
+        position: "top",
         labels: {
           font: {
-            size: 18, // Increased font size for legend labels
-            family: "Arial", // Use a clean and readable font
+            size: 16,
+            family: "Arial",
           },
-          color: "#FFFFFF", // White font color for better readability on dark backgrounds
-          padding: 15, // Add spacing between legend items
+          color: "#000000",
+          padding: 15,
         },
       },
       datalabels: {
-        color: "#FFFFFF", // White font color for data labels
-        formatter: (value) => (value > 0 ? `${value.toFixed(3)}%` : null), // Show values as percentages, hide 0%
+        color: "#000000",
+        formatter: (value) => (value > 0 ? `${value.toFixed(3)}%` : null),
         font: {
-          size: 18, // Increased font size for data labels
+          size: 16,
           weight: "bold",
         },
       },
     },
     responsive: true,
   };
-  
+
   const handleSignOut = () => {
-    // Add sign-out logic here (e.g., clearing session, tokens, etc.)
     navigate("/");
   };
-  
+
   return (
     <>
-    <Header />
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h1 style={{ marginBottom: "20px", textAlign: "center" }}>
-        Department Courses Overview
-      </h1>
+      <Header />
+      <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+        <h1 style={{ marginBottom: "20px", textAlign: "center" }}>
+          Department Courses Overview
+        </h1>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          flexWrap: "wrap",
-          marginBottom: "20px",
-          gap: "15px",
-        }}
-      >
-        <select
-          onChange={(e) => setSelectedDept(e.target.value)}
-          value={selectedDept}
-          style={{
-            padding: "10px",
-            fontSize: "16px",
-            borderRadius: "5px",
-            border: "1px solid #ddd",
-            width: "200px",
-          }}
-        >
-          <option value="">Select a Department</option>
-          {departments.map((dept) => (
-            <option key={dept.id} value={dept.name}>
-              {dept.name}
-            </option>
-          ))}
-        </select>
-
-        <select
-          onChange={(e) => setSelectedReg(e.target.value)}
-          value={selectedReg}
-          style={{
-            padding: "10px",
-            fontSize: "16px",
-            borderRadius: "5px",
-            border: "1px solid #ddd",
-            width: "200px",
-          }}
-        >
-          {regulations.map((reg, index) => (
-            <option key={index} value={reg}>
-              {reg}
-            </option>
-          ))}
-        </select>
-
-        <button
-          onClick={() => handleViewChange("chart")}
-          disabled={viewMode === "chart"}
-          style={{
-            padding: "10px 20px",
-            fontSize: "16px",
-            borderRadius: "5px",
-            border: "none",
-            backgroundColor: viewMode === "chart" ? "#bbb" : "#007bff",
-            color: "#fff",
-            cursor: viewMode === "chart" ? "not-allowed" : "pointer",
-            width: "150px",
-          }}
-        >
-          View Chart
-        </button>
-
-        <button
-          onClick={() => handleViewChange("table")}
-          disabled={viewMode === "table"}
-          style={{
-            padding: "10px 20px",
-            fontSize: "16px",
-            borderRadius: "5px",
-            border: "none",
-            backgroundColor: viewMode === "table" ? "#bbb" : "#007bff",
-            color: "#fff",
-            cursor: viewMode === "table" ? "not-allowed" : "pointer",
-            width: "150px",
-          }}
-        >
-          View Table
-        </button>
-
-        {/* <button
-          onClick={() => navigate(-1)}
+        <div
           style={{
             display: "flex",
-            alignItems: "center",
             justifyContent: "center",
-            padding: "10px 20px",
-            fontSize: "16px",
-            borderRadius: "5px",
-            border: "none",
-            backgroundColor: "#28a745",
-            color: "#fff",
-            cursor: "pointer",
-            width: "150px",
-            gap: "10px",
+            alignItems: "center",
+            flexWrap: "wrap",
+            marginBottom: "20px",
+            gap: "15px",
           }}
         >
-          <FontAwesomeIcon icon={faHome} />
-          Home
-        </button> */}
-      </div>
+          <select
+            onChange={(e) => setSelectedDept(e.target.value)}
+            value={selectedDept}
+            style={{
+              padding: "10px",
+              fontSize: "16px",
+              borderRadius: "5px",
+              border: "1px solid #ddd",
+              width: "200px",
+            }}
+          >
+            <option value="">Select a Department</option>
+            {departments.map((dept) => (
+              <option key={dept.id} value={dept.name}>
+                {dept.name}
+              </option>
+            ))}
+          </select>
 
-      {viewMode === "chart" && (
-        <div style={{ maxWidth: "950px", margin: "0 auto" }}>
-          {selectedDept ? (
-            <Pie data={pieChartData} options={pieChartOptions} />
-          ) : (
-            <p
+          {/* Show regulation dropdown only for "table" view mode */}
+          {viewMode === "table" && (
+            <select
+              onChange={(e) => setSelectedReg(e.target.value)}
+              value={selectedReg}
               style={{
-                textAlign: "center",
-                color: "#ffffff",
-                fontSize: "25px",
+                padding: "10px",
+                fontSize: "16px",
+                borderRadius: "5px",
+                border: "1px solid #ddd",
+                width: "200px",
               }}
             >
-              Please select a department
-            </p>
+              {regulations.map((reg, index) => (
+                <option key={index} value={reg}>
+                  {reg}
+                </option>
+              ))}
+            </select>
           )}
-        </div>
-      )}
 
-      {viewMode === "table" && Object.keys(semesterData).length !== 0 && (
-        <Table
-          semesterData={semesterData}
-          categoryData={categoryData}
-          categoryMapping={categoryMapping}
-        />
-      )}
-    </div>
+          <button
+            onClick={() => handleViewChange("chart")}
+            disabled={viewMode === "chart"}
+            style={{
+              padding: "10px 20px",
+              fontSize: "16px",
+              borderRadius: "5px",
+              border: "none",
+              backgroundColor: viewMode === "chart" ? "#bbb" : "#007bff",
+              color: "#fff",
+              cursor: viewMode === "chart" ? "not-allowed" : "pointer",
+              width: "150px",
+            }}
+          >
+            View Chart
+          </button>
+
+          <button
+            onClick={() => handleViewChange("table")}
+            disabled={viewMode === "table"}
+            style={{
+              padding: "10px 20px",
+              fontSize: "16px",
+              borderRadius: "5px",
+              border: "none",
+              backgroundColor: viewMode === "table" ? "#bbb" : "#007bff",
+              color: "#fff",
+              cursor: viewMode === "table" ? "not-allowed" : "pointer",
+              width: "150px",
+            }}
+          >
+            View Table
+          </button>
+        </div>
+
+        {viewMode === "chart" && (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "30px",
+              maxWidth: "950px",
+              margin: "0 auto",
+            }}
+          >
+            {selectedDept ? (
+              <>
+                {Object.entries(allRegulationsCategoryData).map(
+                  ([regulation, data]) => {
+                    if (Object.values(data).every((category) => !category.length)) {
+                      return null; // Skip empty data
+                    }
+                    return (
+                      <div
+                        key={regulation}
+                        style={{
+                          backgroundColor: "#fff",
+                          padding: "20px",
+                          borderRadius: "8px",
+                          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                          border: selectedReg === regulation ? "2px solid #007bff" : "none",
+                        }}
+                      >
+                        <h2 style={{ textAlign: "center" }}>{regulation}</h2>
+                        <Pie
+                          data={{
+                            labels: Object.values(categoryMapping),
+                            datasets: [
+                              {
+                                data: calculatePieChartData(data),
+                                backgroundColor: [
+                                  "#FF6384",
+                                  "#36A2EB",
+                                  "#FFCE56",
+                                  "#4BC0C0",
+                                  "#9966FF",
+                                  "#FF9F40",
+                                  "#C9CBCF",
+                                ],
+                                hoverBackgroundColor: [
+                                  "#FF6384",
+                                  "#36A2EB",
+                                  "#FFCE56",
+                                  "#4BC0C0",
+                                  "#9966FF",
+                                  "#FF9F40",
+                                  "#C9CBCF",
+                                ],
+                              },
+                            ],
+                          }}
+                          options={pieChartOptions}
+                        />
+                      </div>
+                    );
+                  }
+                )}
+              </>
+            ) : (
+              <p style={{ textAlign: "center", color: "#fff" }}>
+                Please select a department to view the chart.
+              </p>
+            )}
+          </div>
+        )}
+
+        {viewMode === "table" && (
+          <Table
+            semesterData={semesterData}
+            categoryData={categoryData}
+            categoryMapping={categoryMapping}
+          />
+        )}
+      </div>
     </>
   );
+
 };
 
 export default CreditsPieChart;

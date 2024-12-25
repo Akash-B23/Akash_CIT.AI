@@ -8,6 +8,12 @@
   align-items: center;
   gap: 15px;
   justify-content: space-between;
+  font-family: "Afacad Flux", serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  font-variation-settings:
+    "slnt" 0;
 }
 
 #logo {
@@ -21,9 +27,9 @@
   color: whitesmoke;
   border-radius: 10px;
   padding: 8px 12px;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: medium;
   text-transform: uppercase;
-  font-family: Arial, sans-serif;
   border: none;
   cursor: pointer;
 }
@@ -47,9 +53,9 @@
   color: whitesmoke;
   border-radius: 10px;
   padding: 8px 12px;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: medium;
   text-transform: uppercase;
-  font-family: Arial, sans-serif;
   border: none;
   cursor: pointer;
 }
@@ -77,4 +83,9 @@
   display: flex;
   align-items: center;
   gap: 20px;
+}
+
+.regAndDeptDetail
+{
+  font-size: larger;
 }

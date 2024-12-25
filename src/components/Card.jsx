@@ -3,16 +3,36 @@
 import React from "react";
 import "./Card.css"; // Ensure this is imported
 import Header from "./Header.jsx";
+import { useDepartment } from "../components/DepartmentContext";
+import { useRegulation } from "../components/RegulationContext";
+import { useNavigate } from "react-router-dom";
 
-function Card({ dept, selectedOption, onOptionChange, onContinue }) {
+function Card({selectedOption, onOptionChange, onContinue }) {
+  const { department } = useDepartment();
+  const { regulation, setRegulation } = useRegulation();
+  const navigate = useNavigate();
+
+  const handleOptionChange = (event) => {
+    const selected = event.target.value;
+    setRegulation(selected); // Update regulation in global context
+    onOptionChange(event); // Pass to parent handler
+  };
+  const handleContinue = () => {
+    // When continue is clicked, navigate to the dashboard and pass rd as state
+    const rd = `${department}-${regulation}`;
+    navigate("/dashboard", {
+      state: { rd } // Pass rd to the Dashboard component
+    });
+  };
+
   return (
     <>
     <Header />
     <div className="card-container">
       <div className="card">
-        <h2 className="card-title">{dept}</h2>
+        <h2 className="card-title">{department}</h2>
         <p className="card-description">
-          Select the regulation which you are going to fill the details for
+          Please select the Regulation
         </p>
 
           <div className="radio-group">
@@ -22,7 +42,7 @@ function Card({ dept, selectedOption, onOptionChange, onContinue }) {
                 name="regulation"
                 value="R21"
                 checked={selectedOption === "R21"}
-                onChange={onOptionChange}
+                onChange={handleOptionChange}
               />
               <span>Regulation 2021</span>
             </label>
@@ -32,7 +52,7 @@ function Card({ dept, selectedOption, onOptionChange, onContinue }) {
                 name="regulation"
                 value="R22"
                 checked={selectedOption === "R22"}
-                onChange={onOptionChange}
+                onChange={handleOptionChange}
               />
               <span>Regulation 2022</span>
             </label>
@@ -42,7 +62,7 @@ function Card({ dept, selectedOption, onOptionChange, onContinue }) {
                 name="regulation"
                 value="R22R"
                 checked={selectedOption === "R22R"}
-                onChange={onOptionChange}
+                onChange={handleOptionChange}
               />
               <span>Regulation 2022 Revised</span>
             </label>
@@ -52,7 +72,7 @@ function Card({ dept, selectedOption, onOptionChange, onContinue }) {
                 name="regulation"
                 value="R24"
                 checked={selectedOption === "R24"}
-                onChange={onOptionChange}
+                onChange={handleOptionChange}
               />
               <span>Regulation 2024</span>
             </label>
@@ -64,7 +84,7 @@ function Card({ dept, selectedOption, onOptionChange, onContinue }) {
               Selected Option: {selectedOption}
             </h3>
             <div className="continue-button">
-              <button onClick={onContinue}>Continue</button>
+              <button onClick={handleContinue}>Continue</button>
             </div>
           </div>
         )}

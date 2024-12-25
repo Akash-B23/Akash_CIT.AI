@@ -52,7 +52,7 @@ select option {
   color: #00aaff;
   font-weight: bold;
   text-transform: uppercase;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .course-table tr:nth-child(even) {
@@ -67,7 +67,7 @@ select option {
 .course-table td select {
   width: 100%;
   padding: 10px;
-  font-size: 14px;
+  font-size: 16px;
   border: 1px solid #555;
   border-radius: 4px;
   background-color: #222;
@@ -111,8 +111,8 @@ select option {
 }
 
 .button-container button {
-  padding: 12px 24px;
-  font-size: 16px;
+  padding: 8px 15px;
+  font-size: 20px;
   font-weight: bold;
   border: none;
   border-radius: 6px;
