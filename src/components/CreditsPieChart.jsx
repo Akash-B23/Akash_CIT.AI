@@ -288,6 +288,7 @@ const CreditsPieChart = () => {
                                   "#9966FF",
                                   "#FF9F40",
                                   "#C9CBCF",
+                                  "#66ff00"
                                 ],
                                 hoverBackgroundColor: [
                                   "#FF6384",
@@ -297,6 +298,7 @@ const CreditsPieChart = () => {
                                   "#9966FF",
                                   "#FF9F40",
                                   "#C9CBCF",
+                                  "#66ff00"
                                 ],
                               },
                             ],
