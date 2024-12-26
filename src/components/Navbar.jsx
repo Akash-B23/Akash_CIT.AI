@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import React from "react";
-import "./NavBar.css";
+import "./Navbar.css";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 
 // Updated NavBar component that passes the selected semester to DashBoard
