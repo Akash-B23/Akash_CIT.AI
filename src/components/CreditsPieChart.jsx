@@ -139,6 +139,7 @@ const CreditsPieChart = () => {
 
   return (
     <>
+      <CreditsPieChartContext.Provider value = {{department, selectedRegulation}}>
       <Header />
       <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
         <h1 style={{ marginBottom: "20px", textAlign: "center" }}>
@@ -326,8 +327,11 @@ const CreditsPieChart = () => {
           </div>
         )}
       </div>
+      </CreditsPieChartContext.Provider> 
     </>
   );
 };
 
+
+export const CreditsPieChartContext = React.createContext(null);
 export default CreditsPieChart;

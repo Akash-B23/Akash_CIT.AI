@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import logo from "../assets/cit_full_logo.png";
+import { CreditsPieChartContext } from "./CreditsPieChart";
 
 const Table = ({ semesterData, categoryData, categoryMapping }) => {
   const calculateTotalCredits = (courses) => {
@@ -9,6 +10,7 @@ const Table = ({ semesterData, categoryData, categoryMapping }) => {
     );
   };
 
+  const {department, selectedRegulation} = useContext(CreditsPieChartContext);
   useEffect(() => {
     const button = document.getElementById("pdf");
 
@@ -26,6 +28,7 @@ const Table = ({ semesterData, categoryData, categoryMapping }) => {
           size: A4;
           margin: 0;
           margin-top: 5mm;
+          margin-bottom: 5mm;
         }
         body {
           font-family: Arial, sans-serif;
@@ -77,6 +80,7 @@ const Table = ({ semesterData, categoryData, categoryMapping }) => {
             <div class="logo">
               <img src="${logo}" alt="Institute Logo" />
             </div>
+            <h2 style = "text-align: center;"> Department: ${department} Regulation: ${selectedRegulation} </h2>
       `);
 
       renderedContent.forEach((content) => {
@@ -127,52 +131,54 @@ const Table = ({ semesterData, categoryData, categoryMapping }) => {
         </div>
       ) : (
         <>
+        <h2> Department: {department} Regulation: {selectedRegulation} </h2>
           {/* Render semester tables */}
+          
           {Object.entries(semesterData || {}).map(([semester, courses]) => (
+            
             <div key={semester} style={{ marginBottom: "20px" }}>
-              {/* <h2 style={{ textAlign: "center", marginBottom: "10px" }}>
-                Semester {semester}
-              </h2> */}
               {courses && courses.length > 0 ? (
                 <table
                   className="generatePDF"
                   style={{
                     margin: "10px auto",
                     borderCollapse: "collapse",
-                    width: "80%",
+                    width: "95%",
                     border: "1px solid black",
                   }}
                 >
+                  
                   <thead>
                     <tr>
-                      <th colSpan = "5" style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "20px"}}>Semester {semester}</th>
+                      <th colSpan = "6" style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "15px"}}>Semester {semester}</th>
                     </tr>
                     <tr>
-                      <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}>Course Code</th>
-                      <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}>Theory/Practical</th>
-                      <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}>Course Name</th>
-                      <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}>Credits</th>
-                      <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}>LTP</th>
+                      <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}>S.NO.</th>
+                      <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}>Course Code</th>
+                      <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}>Course Name</th>
+                      <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}>Theory/Practical</th>
+                      <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px", width: "35px"}}>LTP</th>
+                      <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}>Credits</th>
                     </tr>
                   </thead>
                   <tbody>
                     {courses.map((course, index) => (
                       <tr key={index}>
-                        <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}> {course.course_code}</td>
-                        <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}>{course.tp}</td>
-                        <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}>{course.course_name}</td>
-                        <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}>{course.credits}</td>
-                        <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}>{course.ltp}</td>
+                        <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}> {index+1}</td>
+                        <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}> {course.course_code}</td>
+                        <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}>{course.course_name}</td>
+                        <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}>{course.tp}</td>
+                        <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px", width: "35px"}}>{course.ltp}</td>
+                        <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}>{course.credits}</td>
                       </tr>
                     ))}
                   </tbody>
                   <tfoot>
                     <tr>
-                      <td colSpan="3" style={{ padding: "10px", textAlign: "right", border: "1px solid black", background: "white", color: "black"}}>
+                      <td colSpan="5" style={{ padding: "10px", textAlign: "right", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}>
                         <strong>Total Credits:</strong>
                       </td>
-                      <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}><strong>{calculateTotalCredits(courses)}</strong></td>
-                      <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}></td>
+                      <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}><strong>{calculateTotalCredits(courses)}</strong></td>
                     </tr>
                   </tfoot>
                 </table>
@@ -193,40 +199,42 @@ const Table = ({ semesterData, categoryData, categoryMapping }) => {
                 style={{
                   margin: "10px auto",
                   borderCollapse: "collapse",
-                  width: "80%",
+                  width: "95%",
                   border: "1px solid black",
                 }}
               >
                 <thead>
                   <tr>
-                    <th colSpan = "5" style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "20px"}}>{categoryMapping && categoryMapping[category]}</th>
+                    <th colSpan = "6" style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "15px"}}>{categoryMapping && categoryMapping[category]}</th>
                   </tr>
                   <tr>
-                    <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}>Course Code</th>
-                    <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}>Theory/Practical</th>
-                    <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}>Course Name</th>
-                    <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}>Credits</th>
-                    <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}>LTP</th>
+                    <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}>S.NO.</th>
+                    <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}>Course Code</th>
+                    <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}>Course Name</th>
+                    <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}>Theory/Practical</th>
+                    
+                    <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px", width: "35px"}}>LTP</th>
+                    <th style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}>Credits</th>
                   </tr>
                 </thead>
                 <tbody>
                   {courses.map((course, index) => (
                     <tr key={index}>
-                      <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}>{course.course_code}</td>
-                      <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}>{course.tp}</td>
-                      <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}>{course.course_name}</td>
-                      <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}>{course.credits}</td>
-                      <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}>{course.ltp}</td>
+                      <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}>{index + 1}</td>
+                      <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}>{course.course_code}</td>
+                      <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}>{course.course_name}</td>
+                      <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}>{course.tp}</td>
+                      <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px", width: "35px"}}>{course.ltp}</td>
+                      <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}>{course.credits}</td>
                     </tr>
                   ))}
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td colSpan="3" style={{ padding: "10px", textAlign: "right", border: "1px solid black", background: "white", color: "black"}}>
+                    <td colSpan="5" style={{ padding: "10px", textAlign: "right", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}>
                       <strong>Total Credits:</strong>
                     </td>
-                    <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}><strong>{calculateTotalCredits(courses)}</strong></td>
-                    <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black"}}></td>
+                    <td style={{ padding: "10px", textAlign: "center", border: "1px solid black", background: "white", color: "black", fontSize: "12px"}}><strong>{calculateTotalCredits(courses)}</strong></td>
                   </tr>
                 </tfoot>
               </table>
